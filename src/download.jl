@@ -6,8 +6,9 @@ using DIVAnd_HFRadar
 username = ENV["CMEMS_USERNAME"]
 password = ENV["CMEMS_PASSWORD"]
 
-lonr = [-12, 22.]
-latr = [30, 55.5]
+dlon = dlat = 0.5
+lonr = -12:dlon:22.
+latr = 30:dlat:55.5
 timerange = [DateTime(2010,5,1),DateTime(2020,1,1)]
 
 #lonr = [7.6, 12.2]
@@ -45,25 +46,54 @@ good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon 
 
 (lon,lat,z,time,u,v) = map(d -> d[good],(lon,lat,z,time,u,v))
 
+
+using DIVAnd
+
+
 @show length(lon)
 using PyPlot
 quiver(lon,lat,u,v)
 rg(z)
 
 
+bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
+bathisglobal = true
 
-#=
-function DIVAndrun_HFRadar(
-    mask,h,pmn,xyi,xyobs,robs,directionobs,len,epsilon2;
-    eps2_boundary_constraint = -1,
-    eps2_div_constraint = -1,
-    eps2_Coriolis_constraint = -1,
-    f = 0.001,
-    residual = zeros(size(robs)),
-    g = 0.,
-    ratio = 100,
-    lenη = (000.0, 000.0, 24 * 60 * 60. * 10),
-    maxit = 100000,
-    tol = 1e-6,
+mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
+hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
+
+size(mask)
+size(bi)
+
+#pcolormesh(xi,yi,mask)
+
+len = 50e3
+
+robs = vcat(u,v)
+robs = Float64.(nomissing(robs,NaN))
+directionobs = vcat(fill(90,size(u)), fill(0,size(v)))
+epsilon2 = 0.1
+residual = zeros(size(robs))
+g = 9.81;
+g = 0;
+x = [lon; lon]
+y = [lat; lat]
+eps2_boundary_constraint = -1
+eps2_div_constraint = -1
+#eps2_boundary_constraint = 1e-9
+eps2_div_constraint = 1e+1
+#figure()
+uri,vri,ηi = DIVAndrun_HFRadar(
+    mask,h,(pm,pn),(xi,yi),(x,y),robs,directionobs,len,epsilon2;
+    eps2_boundary_constraint = eps2_boundary_constraint,
+    eps2_div_constraint = eps2_div_constraint,
+    # eps2_Coriolis_constraint = -1,
+    # f = 0.001,
+    # residual = residual,
+    # g = g,
+    # ratio = 100,
+    # lenη = (000.0, 000.0, 24 * 60 * 60. * 10),
+    # maxit = 100000,
+    # tol = 1e-6,
 )
-=#
+clf(); quiver(xi,yi,uri,vri)
