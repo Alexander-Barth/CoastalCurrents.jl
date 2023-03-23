@@ -1,0 +1,9 @@
+name = "CoastalCurrents"
+uuid = "12750a1a-8500-4ab4-99d8-5bd0a9331725"
+authors = ["Alexander Barth <barth.alexander@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
+PhysOcean = "3725be50-bbbd-5592-92c3-2f0e82159c3e"
