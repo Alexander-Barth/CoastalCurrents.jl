@@ -2,6 +2,7 @@ using PhysOcean, Dates, NCDatasets, JLD2
 using PhysOcean
 using CoastalCurrents
 using DIVAnd_HFRadar
+using OceanPlot
 
 username = ENV["CMEMS_USERNAME"]
 password = ENV["CMEMS_PASSWORD"]
@@ -9,6 +10,11 @@ password = ENV["CMEMS_PASSWORD"]
 dlon = dlat = 0.5
 lonr = -12:dlon:22.
 latr = 30:dlat:55.5
+
+dlon = dlat = 0.25
+lonr = -8:dlon:15.
+latr = 32:dlat:45
+
 timerange = [DateTime(2010,5,1),DateTime(2020,1,1)]
 
 #lonr = [7.6, 12.2]
@@ -42,18 +48,21 @@ ds = NCDataset(joinpath(basedir,fname))
 
 lon,lat,z,time,u,v = CoastalCurrents.loaddata(files);
 
-good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon .<= lonr[end]) .&& (latr[1] .<= lat .<= latr[end])
+speed = @. sqrt(u^2 + v^2)
+
+good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon .<= lonr[end]) .&& (latr[1] .<= lat .<= latr[end]) .&& speed .< 0.5
 
 (lon,lat,z,time,u,v) = map(d -> d[good],(lon,lat,z,time,u,v))
+
 
 
 using DIVAnd
 
 
-@show length(lon)
-using PyPlot
-quiver(lon,lat,u,v)
-rg(z)
+# @show length(lon)
+# using PyPlot
+# quiver(lon,lat,u,v)
+# rg(z)
 
 
 bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
@@ -62,8 +71,9 @@ bathisglobal = true
 mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
 hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
 
-size(mask)
-size(bi)
+label = DIVAnd.floodfill(mask)
+mask = label .== 1
+
 
 #pcolormesh(xi,yi,mask)
 
@@ -96,4 +106,14 @@ uri,vri,ηi = DIVAndrun_HFRadar(
     # maxit = 100000,
     # tol = 1e-6,
 )
-clf(); quiver(xi,yi,uri,vri)
+speedi = @. sqrt(uri^2 + vri^2)
+clf(); quiver(xi,yi,uri,vri,speedi)
+xlim(-7,15)
+ylim(35.,44.5)
+#colorbar(orientation="vertical")
+colorbar(orientation="horizontal")
+title("average near-surface currents (2020), m/s")
+OceanPlot.set_aspect_ratio()
+#OceanPlot.plot_coastline()
+OceanPlot.plotmap()
+savefig(expanduser("~/Figures/bluecloud-drifter-vel-div-$(eps2_div_constraint).png"))
