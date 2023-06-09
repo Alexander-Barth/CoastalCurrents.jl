@@ -2,6 +2,10 @@ using DIVAnd_HFRadar
 using PhysOcean
 using GeoMapping
 using OceanPlot
+using NCDatasets
+using Dates
+using Test
+using DIVAnd
 
 include("common.jl")
 
@@ -37,7 +41,6 @@ adt = mdt + sla
 #OceanPlot.set_aspect_ratio()
 
 
-angle = zeros(length(lonc))
 
 
 function perp_velocity!(lon,lat,adt,u,v)
@@ -156,11 +159,10 @@ len = 150e3
 directionobs = atand.(ua,va)
 
 
-@test ua[1] ≈ ur[1]*sind(directionobs[1])
-@test va[1] ≈ ur[1]*cosd(directionobs[1])
+@test ua[1] ≈ robs[1]*sind(directionobs[1])
+@test va[1] ≈ robs[1]*cosd(directionobs[1])
 
 
-using DIVAnd
 
 bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
 bathisglobal = true
@@ -184,7 +186,7 @@ directionobs = directionobs[valid]
 
 
 
-epsilon2 = 0.1
+epsilon2 = 0.5
 eps2_boundary_constraint = -1
 eps2_div_constraint = -1
 #eps2_boundary_constraint = 1e-9
@@ -205,7 +207,34 @@ uri,vri,ηi = DIVAndrun_HFRadar(
 )
 
 color = sqrt.(uri.^2 + vri.^2)
-quiver(xi,yi,uri,vri,color)
+
+using PyPlot
+clf()
+r = CartesianIndices(( 1:2:size(mask,1) ,1:2:size(mask,2)))
+r = CartesianIndices(( 1:1:size(mask,1) ,1:1:size(mask,2)))
+quiver(xi[r],yi[r],uri[r],vri[r],color[r],cmap="jet")
+colorbar(orientation="horizontal")
+OceanPlot.plotmap()
+OceanPlot.set_aspect_ratio()
+title("surface current " * join(Dates.format.((minimum(timea),maximum(timea)),"yyyy-mm-dd")," - "))
+savefig(expanduser("~/Figures/altimetry_currents_DIVAnd.png"),dpi=300)
+
+
+
+
+
+clf()
+r = CartesianIndices(( 1:1:size(mask,1) ,1:1:size(mask,2)))
+quiver(xi[r],yi[r],uri[r],vri[r],color[r],cmap="jet",scale=2)
+xlim(1.4689516128929263, 11)
+ylim(38., 44.25205736596321)
+colorbar(orientation="horizontal")
+OceanPlot.plotmap()
+OceanPlot.set_aspect_ratio()
+title("surface current " * join(Dates.format.((minimum(timea),maximum(timea)),"yyyy-mm-dd")," - "))
+savefig(expanduser("~/Figures/altimetry_currents_DIVAnd_zoom.png"),dpi=300)
+
+
 
 #=
 lon = [0,1]
