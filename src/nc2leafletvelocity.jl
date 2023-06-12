@@ -38,7 +38,7 @@ function nc2json(lon,lat,time,u,v,f::IO; reduce = 1)
     u = u[i,j]
     v = v[i,j]
 
-    @show size(u)
+    @debug "size of velocity" size(u) size(v)
     refTime = Dates.format(time,"yyyy-mm-dd HH:MM:SS")
     data = [dd(lon,lat,u,"Eastward current",2,refTime), dd(lon,lat,v,"Northward current",3,refTime)]
 
