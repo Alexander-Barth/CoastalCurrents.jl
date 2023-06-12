@@ -53,4 +53,5 @@ function loaddata(files::AbstractVector{<:AbstractString})
     return lon[:],lat[:],z[:],time[:],u[:],v[:]
 end
 
+include("plotting.jl");
 end # module CoastalCurrents

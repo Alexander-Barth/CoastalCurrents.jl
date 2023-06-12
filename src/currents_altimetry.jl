@@ -10,11 +10,7 @@ using DIVAnd
 include("common.jl")
 
 
-
-
 ds = NCDataset(altimetry_fname)
-
-
 mdt = ds["mdt"][:]
 sla = ds["slaf"][:]
 lon = ds["lon"][:]
@@ -30,17 +26,10 @@ adt = mdt + sla
 
 
 
-
-
-
-
-
 #figure();scatter(lon,lat,10,id)
 #figure();
 #scatter(lon,lat,10,adt);
 #OceanPlot.set_aspect_ratio()
-
-
 
 
 function perp_velocity!(lon,lat,adt,u,v)
@@ -186,11 +175,13 @@ directionobs = directionobs[valid]
 
 
 
-epsilon2 = 0.5
+epsilon2 = 2.
 eps2_boundary_constraint = -1
 eps2_div_constraint = -1
 #eps2_boundary_constraint = 1e-9
 eps2_div_constraint = 1e+1
+eps2_div_constraint = 1
+
 #figure()
 uri,vri,ηi = DIVAndrun_HFRadar(
     mask,h,(pm,pn),(xi,yi),(x,y),robs,directionobs,len,epsilon2;
@@ -206,6 +197,7 @@ uri,vri,ηi = DIVAndrun_HFRadar(
     # tol = 1e-6,
 )
 
+#=
 color = sqrt.(uri.^2 + vri.^2)
 
 using PyPlot
@@ -233,6 +225,7 @@ OceanPlot.plotmap()
 OceanPlot.set_aspect_ratio()
 title("surface current " * join(Dates.format.((minimum(timea),maximum(timea)),"yyyy-mm-dd")," - "))
 savefig(expanduser("~/Figures/altimetry_currents_DIVAnd_zoom.png"),dpi=300)
+=#
 
 
 

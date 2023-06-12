@@ -5,5 +5,8 @@ version = "0.1.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
 PhysOcean = "3725be50-bbbd-5592-92c3-2f0e82159c3e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
