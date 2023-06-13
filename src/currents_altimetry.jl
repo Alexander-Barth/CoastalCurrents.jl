@@ -91,7 +91,7 @@ k = 0
 kc = 0
 
 # loop for every track
-@time for j = 1:length(len)
+for j = 1:length(len)
     global k
     global kc
     local i

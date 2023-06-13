@@ -7,9 +7,10 @@ include("nc2leafletvelocity.jl")
 const leaflet_init = Ref(false);
 
 function setup()
-    if leaflet_init[]
-        return
-    end
+#    if leaflet_init[]
+#        return
+    #    end
+    @debug "Load leaflet and leaflet-velocity"
     display("text/javascript", """
 var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -29,7 +30,7 @@ var script = document.createElement('script');
 <link rel="stylesheet" href="http://data-assimilation.net/upload/Alex/leaflet-velocity/dist/leaflet-velocity.min.css" />
 <link rel="stylesheet" href="http://data-assimilation.net/upload/Alex/leaflet-velocity/demo2/demo.css" />
 """);
-    leaflet_init[] = true;
+#    leaflet_init[] = true;
 end
 
 
