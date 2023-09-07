@@ -6,6 +6,8 @@ using NCDatasets
 using Base.Threads
 using DataStructures
 using ProgressMeter
+using PhysOcean
+using GeoMapping
 
 # ---
 
@@ -196,15 +198,21 @@ function perp_velocity(lon,lat,adt)
     return (lonc,latc,u,v)
 end
 
+function alloc_ragged(T,lenc)
+    i = cumsum(lenc)
+    tmp = Vector{T}(undef,sum(lenc))
+    return [view(tmp,i[k]-lenc[k]+1 : i[k]) for k = 1:length(lenc)]
+end
 
-function geostrophic_velocity(lon,lat,time,adt,len)
+function geostrophic_velocity(lon,lat,time,adt)
+    len = length.(adt)
     lenc = len .- 1
 
-    lona = Vector{Float64}(undef,sum(lenc))
-    lata = Vector{Float64}(undef,sum(lenc))
-    ua = Vector{Float64}(undef,sum(lenc))
-    va = Vector{Float64}(undef,sum(lenc))
-    timea = Vector{DateTime}(undef,sum(lenc))
+    lona = alloc_ragged(Float64,lenc)
+    lata = alloc_ragged(Float64,lenc)
+    ua = alloc_ragged(Float64,lenc)
+    va = alloc_ragged(Float64,lenc)
+    timea = alloc_ragged(DateTime,lenc)
 
 
 
@@ -212,30 +220,20 @@ function geostrophic_velocity(lon,lat,time,adt,len)
     kc = 0
 
     # loop for every track
-    for j = 1:length(len)
-        local i
-        local timec
-        local latc
-        i = k .+ (1:len[j])
-        ic = kc .+ (1:lenc[j])
+    for (lonc_,latc_,timec_,uc_,vc_,lon_,lat_,time_,adt_) in
+        zip(lona,lata,timea,ua,va,lon,lat,time,adt)
 
         # loop along track
-        for l = 1:lenc[j]
-            lona[kc+l] = (lon[k+l+1]+lon[k+l])/2
-            lata[kc+l] = (lat[k+l+1]+lat[k+l])/2
+        for l = 1:length(lonc_)
+            lonc_[l] = (lon_[l+1]+lon_[l])/2
+            latc_[l] = (lat_[l+1]+lat_[l])/2
 
-            timea[kc+l] = Dates.epochms2datetime(
-                (Dates.datetime2epochms.(time[k+l+1]) +
-                    Dates.datetime2epochms.(time[k+l])) ÷ 2)
+            timec_[l] = Dates.epochms2datetime(
+                (Dates.datetime2epochms.(time_[l+1]) +
+                    Dates.datetime2epochms.(time_[l])) ÷ 2)
         end
 
-        perp_velocity!(
-            (@view lon[i]),(@view lat[i]),(@view adt[i]),
-            (@view ua[ic]),(@view va[ic]))
-
-        #scatter(lon[i],lat[i],10,adt[i])
-        k += len[j]
-        kc += lenc[j]
+        perp_velocity!(lon_,lat_,adt_,uc_,vc_)
     end
 
     return (lona,lata,timea,ua,va)
