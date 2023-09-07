@@ -25,8 +25,14 @@ function dd(lon,lat,u,parameterNumberName,parameterNumber,refTime)
 end
 
 
+function nc2json(lon::Vector,lat::Vector,time,u,v,f::IO; reduce = 1)
+    X = repeat(lon,inner=(1,length(lat)))
+    Y = repeat(lat',inner=(length(lon),1))
+    nc2json(X,Y,time,u,v,f; reduce = reduce)
+end
 
-function nc2json(lon,lat,time,u,v,f::IO; reduce = 1)
+
+function nc2json(lon::Matrix,lat::Matrix,time,u,v,f::IO; reduce = 1)
 #    @assert all(lon[1,:] .== lon[1,1])
 #    @assert all(lat[:,1] .== lat[1,1])
 
@@ -139,3 +145,5 @@ nc2json(fname,varname,gridname,outfname;
 )
 
 =#
+
+# nc2json(xi,yi,time,uri,vri,"/tmp/foo.json"; reduce = 1)

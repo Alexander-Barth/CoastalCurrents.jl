@@ -1,11 +1,12 @@
 using DIVAnd_HFRadar
 using PhysOcean
 using GeoMapping
-using OceanPlot
+#using OceanPlot
 using NCDatasets
 using Dates
 using Test
 using DIVAnd
+using DataStructures
 
 include("common.jl")
 
@@ -153,10 +154,6 @@ directionobs = atand.(ua,va)
 
 
 
-bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
-bathisglobal = true
-
-
 
 mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
 hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
@@ -196,6 +193,49 @@ uri,vri,ηi = DIVAndrun_HFRadar(
     # maxit = 100000,
     # tol = 1e-6,
 )
+
+
+
+isfile(result_filename) && rm(result_filename)
+
+# TODO
+timei = first(time)
+timei = [DateTime(2013,3,1)]
+
+
+ds = NCDataset(result_filename,"c")
+
+defVar(ds,"lon",xi[:,1],("lon",),attrib = OrderedDict(
+    "long_name" => "longitude",
+    "units" => "degrees_east",
+    "standard_name" => "longitude"))
+
+defVar(ds,"lat",yi[1,:],("lat",),attrib = OrderedDict(
+    "long_name" => "latitude",
+    "units" => "degrees_north",
+    "standard_name" => "latitude"))
+
+
+defVar(ds,"time",timei,("time",),
+       attrib = OrderedDict(
+           "standard_name" => "time",
+           "units" => "days since 1950-01-01 00:00:00",
+       ))
+
+defVar(ds,"u",uri[:,:,1:1],("lon","lat","time"),attrib = OrderedDict(
+    "long_name" => "zonal velocity",
+    "units" => "m/s",
+    "standard_name" => "eastward_sea_water_velocity"))
+
+defVar(ds,"v",vri[:,:,1:1],("lon","lat","time"),attrib = OrderedDict(
+    "long_name" => "meridional velocity",
+    "units" => "m/s",
+    "standard_name" => "northward_sea_water_velocity"))
+
+ds.attrib["Conventions"] = "CF-1.10"
+
+
+close(ds)
 
 #=
 color = sqrt.(uri.^2 + vri.^2)

@@ -2,6 +2,7 @@ module CoastalCurrents
 using NCDatasets
 using PhysOcean
 using Dates
+using Statistics
 
 # function to load all data
 function loaddata(fname::AbstractString)
@@ -54,4 +55,7 @@ function loaddata(files::AbstractVector{<:AbstractString})
 end
 
 include("plotting.jl");
+include("altimetry.jl");
+include("utils.jl")
+
 end # module CoastalCurrents

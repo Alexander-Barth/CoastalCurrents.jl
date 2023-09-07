@@ -1,5 +1,9 @@
 module Plotting
+
 using Random
+using PyPlot
+using DIVAnd
+using Statistics
 
 include("nc2leafletvelocity.jl")
 
@@ -103,6 +107,38 @@ function plot(lon,lat,u,v;
   layerControl.addOverlay(velocityLayer, name);
   velocityLayer.addTo(map);
 """);
+end
+
+
+"""
+Fixes the aspect ratio of a plot.
+"""
+function set_aspect_ratio()
+    ax = gca()
+    as = cosd(mean(ylim()))
+    ax.set_aspect(1/as)
+end
+
+
+function plotmap(bathname = joinpath(ENV["HOME"],"projects","Julia","DIVAnd-example-data","Global","Bathymetry","gebco_30sec_4.nc");
+                  patchcolor = [.8,.8,.8], coastlinecolor = nothing)
+
+    xl = xlim()
+    yl = ylim()
+    # work-around
+    xl = xl[1]:0.1:xl[2]
+    yl = yl[1]:0.1:yl[2]
+
+    bx,by,b = DIVAnd.extract_bath(bathname,true,xl,yl)
+    if patchcolor !== nothing
+        contourf(bx,by,b', levels = [-1e5,0],colors = [patchcolor])
+    end
+
+    if coastlinecolor !== nothing
+        contour(bx,by,b', levels = [-1e5,0],colors = coastlinecolor, linestyles = "-")
+    end
+
+    set_aspect_ratio()
 end
 
 end

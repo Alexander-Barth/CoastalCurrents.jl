@@ -1,6 +1,6 @@
 module Altimetry
 
-
+import CoastalCurrents
 using Dates
 using NCDatasets
 using Base.Threads
@@ -147,4 +147,20 @@ iscomplete(fname) = NCDataset(fname) do ds
     haskey(ds,"mdt")
 end
 
+"""
+    Recursive download of all files
+"""
+function download(url,basedir,username,password; download_level = 5, force = false)
+
+    product_id = basename(url)
+
+    if !isdir(joinpath(basedir,product_id)) && !force
+        cd(basedir) do
+            run(`wget --no-parent --recursive --level=$(download_level) -nH --cut-dirs=1  --user=$(username) --password=$(password) $(url)`)
+        end
+    end
+
+    fnames = CoastalCurrents.listfiles(joinpath(basedir,product_id), extension = ".nc")
 end
+
+end # module
