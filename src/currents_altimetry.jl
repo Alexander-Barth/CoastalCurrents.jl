@@ -1,3 +1,11 @@
+#
+# # Generate surface currents
+#
+# Load all necessary modules
+
+using CoastalCurrents
+using CoastalCurrents: Altimetry
+
 using DIVAnd_HFRadar
 using PhysOcean
 using GeoMapping
