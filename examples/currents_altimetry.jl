@@ -145,3 +145,7 @@ CoastalCurrents.Plotting.plotmap(bathname)
 title("surface current " * join(Dates.format.((minimum(timea),maximum(timea)),"yyyy-mm-dd")," - "))
 
 
+
+# Visalize with the leaflet javascript library 🍃
+
+CoastalCurrents.Plotting.plot(xi,yi,uri,vri,scale = 15,maxvelocity = 0.05);
