@@ -5,9 +5,10 @@ using PhysOcean
 using CoastalCurrents
 using DIVAnd_HFRadar
 using OceanPlot
+using DIVAnd
 
-username = ENV["CMEMS_USERNAME"]
-password = ENV["CMEMS_PASSWORD"]
+include("common.jl")
+
 
 dlon = dlat = 0.5
 lonr = -12:dlon:22.
@@ -58,7 +59,6 @@ good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon 
 
 
 
-using DIVAnd
 
 
 # @show length(lon)

@@ -32,8 +32,8 @@ fnames = Altimetry.download(url,basedir,username,password);
 
 # As a test consider only the first 100 tracks
 
-sel = 1:100
-fnames = fnames[sel]
+#sel = 1:100
+#fnames = fnames[sel]
 
 # Load the data in all files with the bounding box defined by `lonr` and `latr`
 

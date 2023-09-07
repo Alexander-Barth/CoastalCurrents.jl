@@ -1,6 +1,7 @@
 using Downloads: download
 
 altimetry_fname = expanduser("~/tmp/BlueCloud2026/Altimetry/all-sla.nc")
+#altimetry_fname = expanduser("~/tmp/BlueCloud2026/Altimetry/all-sla-subset.nc")
 varname = "sla"
 
 

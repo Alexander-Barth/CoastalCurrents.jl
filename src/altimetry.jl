@@ -163,4 +163,82 @@ function download(url,basedir,username,password; download_level = 5, force = fal
     fnames = CoastalCurrents.listfiles(joinpath(basedir,product_id), extension = ".nc")
 end
 
+
+
+function perp_velocity!(lon,lat,adt,u,v)
+    Re = PhysOcean.MEAN_RADIUS_EARTH
+    for i = 1:length(lon)-1
+        lonc = (lon[i+1] + lon[i])/2
+        latc = (lat[i+1] + lat[i])/2
+
+        f = PhysOcean.coriolisfrequency(latc)
+        g = PhysOcean.earthgravity(latc)
+
+        ds = π*Re/180 * GeoMapping.distance(lat[i+1],lon[i+1],lat[i],lon[i])
+
+        ut = g/f * (adt[i+1]-adt[i]) / ds
+
+        az = GeoMapping.azimuth(latc,lonc,lat[i+1],lon[i+1])
+        u[i] = -ut * cosd(-az)
+        v[i] = -ut * sind(-az)
+    end
+
+    return (u,v)
+end
+
+function perp_velocity(lon,lat,adt)
+    latc = (lat[1:end-1] + lat[2:end])/2
+    lonc = (lon[1:end-1] + lon[2:end])/2
+
+    u = zeros(length(latc))
+    v = zeros(length(lonc))
+    perp_velocity!(lon,lat,adt,u,v)
+    return (lonc,latc,u,v)
+end
+
+
+function geostrophic_velocity(lon,lat,time,adt,len)
+    lenc = len .- 1
+
+    lona = Vector{Float64}(undef,sum(lenc))
+    lata = Vector{Float64}(undef,sum(lenc))
+    ua = Vector{Float64}(undef,sum(lenc))
+    va = Vector{Float64}(undef,sum(lenc))
+    timea = Vector{DateTime}(undef,sum(lenc))
+
+
+
+    k = 0
+    kc = 0
+
+    # loop for every track
+    for j = 1:length(len)
+        local i
+        local timec
+        local latc
+        i = k .+ (1:len[j])
+        ic = kc .+ (1:lenc[j])
+
+        # loop along track
+        for l = 1:lenc[j]
+            lona[kc+l] = (lon[k+l+1]+lon[k+l])/2
+            lata[kc+l] = (lat[k+l+1]+lat[k+l])/2
+
+            timea[kc+l] = Dates.epochms2datetime(
+                (Dates.datetime2epochms.(time[k+l+1]) +
+                    Dates.datetime2epochms.(time[k+l])) ÷ 2)
+        end
+
+        perp_velocity!(
+            (@view lon[i]),(@view lat[i]),(@view adt[i]),
+            (@view ua[ic]),(@view va[ic]))
+
+        #scatter(lon[i],lat[i],10,adt[i])
+        k += len[j]
+        kc += lenc[j]
+    end
+
+    return (lona,lata,timea,ua,va)
+end
+
 end # module
