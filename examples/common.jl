@@ -1,7 +1,5 @@
 using Downloads: download
 
-altimetry_fname = expanduser("~/tmp/BlueCloud2026/Altimetry/all-sla.nc")
-#altimetry_fname = expanduser("~/tmp/BlueCloud2026/Altimetry/all-sla-subset.nc")
 varname = "sla"
 
 
@@ -18,11 +16,21 @@ latr = 30:dlat:46
 
 product_id = "SEALEVEL_EUR_PHY_L3_MY_008_061"
 
-basedir = expanduser("~/tmp/BlueCloud2026/Altimetry/")
+
+basedir = expanduser("~/tmp/BlueCloud2026")
+
+
+altimetry_dir = joinpath(basedir,"Altimetry")
+drifter_dir = joinpath(basedir,"Drifter")
+
+altimetry_fname = joinpath(altimetry_dir,"all-sla.nc")
+#altimetry_fname = joinpath(altimetrydir,"all-sla-subset.nc")
 
 mkpath(basedir)
+mkpath(altimetry_dir)
+mkpath(drifter_dir)
 
-bathname = expanduser("~/tmp/BlueCloud2026/gebco_30sec_4.nc")
+bathname = joinpath(basedir,"gebco_30sec_4.nc")
 bathisglobal = true
 
 result_filename = "surface-currents.nc"
