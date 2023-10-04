@@ -14,7 +14,7 @@
 #     name: julia-1.9
 # ---
 
-# # Download drifter data
+# # Generate surface currents from drifter data
 
 using Dates
 using NCDatasets
@@ -28,33 +28,13 @@ using PyPlot
 include("common.jl")
 
 
-dlon = dlat = 0.5
-lonr = -12:dlon:22.
-latr = 30:dlat:55.5
-
-dlon = dlat = 0.25
-lonr = -8:dlon:15.
-latr = 32:dlat:45
-
-timerange = [DateTime(2010,5,1),DateTime(2020,1,1)]
-
-#lonr = [7.6, 12.2]
-#latr = [42, 44.5]
-timerange = [DateTime(2020,1,1),DateTime(2020,12,31)]
-param = "NSCT"
-
-indexURLs = ["ftp://my.cmems-du.eu/Core/INSITU_GLO_PHY_UV_DISCRETE_MY_013_044/cmems_obs-ins_glo_phy-cur_my_drifter_PT6H/index_history.txt"]
-
-datadir = expanduser("~/Data/Blue-Cloud-2026/drifter")
-mkpath(datadir)
-basedir = datadir
-
-
-
-# files = CMEMS.download(lonr,latr,timerange,param,username,password,basedir; indexURLs = indexURLs)
+# +
+#timerange = [DateTime(2020,1,1),DateTime(2020,12,31)]
+#param = "NSCT"
+# -
 
 files = String[]
-for (root, dirs, files2) in walkdir(basedir)
+for (root, dirs, files2) in walkdir(drifter_dir)
     for file in files2
         push!(files,joinpath(root, file)) # add path to files
     end
@@ -62,10 +42,7 @@ end
 
 fname = files[1]
 
-ds = NCDataset(joinpath(basedir,fname))
-
-
-
+ds = NCDataset(fname)
 
 lon,lat,z,time,u,v = CoastalCurrents.loaddata(files);
 
@@ -80,9 +57,6 @@ good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon 
 # quiver(lon,lat,u,v)
 # rg(z)
 
-
-bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
-bathisglobal = true
 
 mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
 hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr);
