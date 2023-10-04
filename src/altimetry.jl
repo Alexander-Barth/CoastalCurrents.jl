@@ -141,7 +141,7 @@ function save(altimetry_fname,lon,lat,time,sla,slaf,mdt,id)
     #defVar(ds,"dtime",time,("time",), attrib = OrderedDict("long_name" => "time of measurement"))
 
     close(ds)
-
+    return nothing
 end
 
 
@@ -150,7 +150,13 @@ iscomplete(fname) = NCDataset(fname) do ds
 end
 
 """
-    Recursive download of all files
+    files = download(url,basedir,username,password; download_level = 5, force = false)
+
+Recursive download of all files under the FTP `url` using the provided
+credentials. Set the maximum number of subdirectories that this script
+will recurse into to is 5  (`download_level`).
+The download is skippped if the files are already present (unless force is
+`true`).
 """
 function download(url,basedir,username,password; download_level = 5, force = false)
 

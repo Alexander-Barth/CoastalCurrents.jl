@@ -18,6 +18,7 @@ using Dates
 # Define common parameters, among others
 # the bounding box, the CMEMS product ID
 # CMEMS username, CMEMS password, ...
+# in a common file called `common.jl`:
 
 include("common.jl")
 
@@ -30,10 +31,12 @@ url = "ftp://my.cmems-du.eu/Core/" * product_id
 
 fnames = Altimetry.download(url,basedir,username,password);
 
-# As a test consider only the first 100 tracks
+# Uncomment the following lines to consider only the first 100 tracks as a test
 
-#sel = 1:100
-#fnames = fnames[sel]
+#=
+sel = 1:100
+fnames = fnames[sel]
+=#
 
 # Load the data in all files with the bounding box defined by `lonr` and `latr`
 
