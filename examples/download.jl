@@ -1,11 +1,29 @@
+# -*- coding: utf-8 -*-
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     text_representation:
+#       extension: .jl
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.14.4
+#   kernelspec:
+#     display_name: Julia 1.9.0
+#     language: julia
+#     name: julia-1.9
+# ---
+
 # # Download drifter data
 
-using PhysOcean, Dates, NCDatasets, JLD2
+using Dates
+using NCDatasets
 using PhysOcean
 using CoastalCurrents
 using DIVAnd_HFRadar
 using OceanPlot
 using DIVAnd
+using PyPlot
 
 include("common.jl")
 
@@ -33,12 +51,12 @@ basedir = datadir
 
 
 
-#files = CMEMS.download(lonr,latr,timerange,param,username,password,basedir; indexURLs = indexURLs)
+# files = CMEMS.download(lonr,latr,timerange,param,username,password,basedir; indexURLs = indexURLs)
 
 files = String[]
 for (root, dirs, files2) in walkdir(basedir)
     for file in files2
-        push!(files,joinpath(root, file)) # path to files
+        push!(files,joinpath(root, file)) # add path to files
     end
 end
 
@@ -51,15 +69,11 @@ ds = NCDataset(joinpath(basedir,fname))
 
 lon,lat,z,time,u,v = CoastalCurrents.loaddata(files);
 
-speed = @. sqrt(u^2 + v^2)
+speed = @. sqrt(u^2 + v^2);
 
-good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon .<= lonr[end]) .&& (latr[1] .<= lat .<= latr[end]) .&& speed .< 0.5
+good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon .<= lonr[end]) .&& (latr[1] .<= lat .<= latr[end]) .&& speed .< 0.5;
 
-(lon,lat,z,time,u,v) = map(d -> d[good],(lon,lat,z,time,u,v))
-
-
-
-
+(lon,lat,z,time,u,v) = map(d -> d[good],(lon,lat,z,time,u,v));
 
 # @show length(lon)
 # using PyPlot
@@ -71,13 +85,13 @@ bathname = expanduser("~/Data/DivaData/Global/gebco_30sec_4.nc")
 bathisglobal = true
 
 mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
-hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr)
+hx, hy, h = DIVAnd.load_bath(bathname, bathisglobal, lonr, latr);
 
 label = DIVAnd.floodfill(mask)
-mask = label .== 1
+mask = label .== 1;
 
 
-#pcolormesh(xi,yi,mask)
+# pcolormesh(xi,yi,mask)
 
 len = 50e3
 
@@ -119,3 +133,5 @@ OceanPlot.set_aspect_ratio()
 #OceanPlot.plot_coastline()
 OceanPlot.plotmap()
 savefig(expanduser("~/Figures/bluecloud-drifter-vel-div-$(eps2_div_constraint).png"))
+
+
