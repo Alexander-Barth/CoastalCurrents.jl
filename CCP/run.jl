@@ -1,5 +1,4 @@
-using Pkg
-Pkg.add(url="https://github.com/Alexander-Barth/CoastalCurrents.jl")
+# executed in docker image abarth/coastal-currents-docker
 
 using CoastalCurrents
 pathname = joinpath(dirname(pathof(CoastalCurrents)),"..","examples")
