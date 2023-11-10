@@ -9,13 +9,13 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Julia 1.9.0
+#     display_name: Julia 1.9.3
 #     language: julia
 #     name: julia-1.9
 # ---
 
 #
-# # Generate surface currents
+# # Generate surface currents from altimetry
 #
 # Load all necessary modules
 
@@ -63,7 +63,9 @@ length(lon)
 
 mean(length.(lon))
 
-plt.hist2d(reduce(vcat,lon),reduce(vcat,lat),(lonr,latr))
+plt.hist2d(reduce(vcat,lon),reduce(vcat,lat),(lonr,latr),
+    norm=matplotlib.colors.LogNorm()
+)
 colorbar(orientation="horizontal",label="count")
 CoastalCurrents.Plotting.plotmap(bathname)
 title("Data count per bins of $(step(lonr))° x $(step(latr))° ");
@@ -178,13 +180,12 @@ color = sqrt.(uri.^2 + vri.^2)
 clf()
 r = CartesianIndices(( 1:2:size(mask,1) ,1:2:size(mask,2)))
 r = CartesianIndices(( 1:1:size(mask,1) ,1:1:size(mask,2)))
-quiver(xi[r],yi[r],uri[r],vri[r],color[r],cmap="jet")
-colorbar(orientation="horizontal")
+q = quiver(xi[r],yi[r],uri[r],vri[r],color[r])
+quiverkey(q,0.1,0.5,0.2,"0.2 m/s")
+colorbar(orientation="horizontal",label="m/s")
 CoastalCurrents.Plotting.plotmap(bathname)
 title("surface current " * join(Dates.format.((minimum(timea),maximum(timea)),"yyyy-mm-dd")," - "));
 
 # Visalize with the leaflet javascript library 🍃
 
 CoastalCurrents.Plotting.plot(xi,yi,uri,vri,scale = 15,maxvelocity = 0.05);
-
-

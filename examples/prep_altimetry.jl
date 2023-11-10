@@ -1,3 +1,18 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     text_representation:
+#       extension: .jl
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.14.4
+#   kernelspec:
+#     display_name: Julia 1.9.3
+#     language: julia
+#     name: julia-1.9
+# ---
+
 #
 # # Altimetry data preparation
 #
@@ -11,7 +26,6 @@ using CoastalCurrents: Altimetry
 using ProgressMeter
 using Test
 using PyPlot
-using GeoDatasets
 using DIVAnd
 using Dates
 
@@ -29,7 +43,7 @@ url = "ftp://my.cmems-du.eu/Core/" * product_id
 # Recursive download of all files under url
 # unless they are already present
 
-fnames = Altimetry.download(url,basedir,username,password);
+fnames = Altimetry.download(url,altimetry_dir,username,password);
 
 # Uncomment the following lines to consider only the first 100 tracks as a test
 
@@ -57,3 +71,5 @@ title("Sea level anomalies ($(join(Dates.format.(extrema(time),"yyyy-mm-dd")," -
 # Save selection in the file `altimetry_fname`
 
 Altimetry.save(altimetry_fname,lon,lat,time,sla,slaf,mdt,id)
+
+
