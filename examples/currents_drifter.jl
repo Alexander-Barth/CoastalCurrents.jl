@@ -9,7 +9,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Julia 1.9.0
+#     display_name: Julia 1.9.3
 #     language: julia
 #     name: julia-1.9
 # ---
@@ -21,7 +21,6 @@ using NCDatasets
 using PhysOcean
 using CoastalCurrents
 using DIVAnd_HFRadar
-using OceanPlot
 using DIVAnd
 using PyPlot
 
@@ -56,6 +55,13 @@ good = isfinite.(u) .&& isfinite.(time) .&& isfinite.(lon) .&& (lonr[1] .<= lon 
 # using PyPlot
 # quiver(lon,lat,u,v)
 # rg(z)
+
+
+plt.hist2d(lon,lat,(lonr,latr),norm=matplotlib.colors.LogNorm())
+colorbar(orientation="horizontal",label="count")
+CoastalCurrents.Plotting.plotmap(bathname)
+title("Data count per bins of $(step(lonr))° x $(step(latr))° ");
+
 
 
 mask,(pm,pn),(xi,yi) = DIVAnd.domain(bathname,bathisglobal,lonr,latr)
@@ -95,17 +101,19 @@ uri,vri,ηi = DIVAndrun_HFRadar(
     # lenη = (000.0, 000.0, 24 * 60 * 60. * 10),
     # maxit = 100000,
     # tol = 1e-6,
-)
+);
+
 speedi = @. sqrt(uri^2 + vri^2)
-clf(); quiver(xi,yi,uri,vri,speedi)
+clf(); q=quiver(xi,yi,uri,vri,speedi,scale=10)
+quiverkey(q,0.1,0.3,1,"1 m/s")
 xlim(-7,15)
 ylim(35.,44.5)
 #colorbar(orientation="vertical")
 colorbar(orientation="horizontal")
 title("average near-surface currents (2020), m/s")
-OceanPlot.set_aspect_ratio()
+#CoastalCurrents.Plotting.set_aspect_ratio()
 #OceanPlot.plot_coastline()
-OceanPlot.plotmap()
-savefig(expanduser("~/Figures/bluecloud-drifter-vel-div-$(eps2_div_constraint).png"))
+CoastalCurrents.Plotting.plotmap(bathname)
+#savefig(expanduser("~/Figures/bluecloud-drifter-vel-div-$(eps2_div_constraint).png"))
 
 
