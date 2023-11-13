@@ -1,3 +1,6 @@
+"""
+This module was written for the BlueCloud2026 project, it will help you to generate surface currents
+"""
 module CoastalCurrents
 using NCDatasets
 using PhysOcean
