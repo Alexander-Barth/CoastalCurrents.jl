@@ -289,9 +289,9 @@ version = "2.7.11"
 
 [[deps.DIVAnd_HFRadar]]
 deps = ["DIVAnd", "Dates", "DelimitedFiles", "Distributed", "Glob", "LinearAlgebra", "NCDatasets", "SparseArrays", "Statistics", "Test"]
-git-tree-sha1 = "686282fedbdb1f06f8cb7f8d9319bb6e031bc636"
+git-tree-sha1 = "a0cf7d521eef8964bbcbd98d087573db37607e95"
 repo-rev = "master"
-repo-url = "https://github.com/gher-uliege/DIVAnd_HFRadar.jl.git"
+repo-url = "https://github.com/gher-uliege/DIVAnd_HFRadar.jl"
 uuid = "7f46824f-871f-4a07-b57f-28974f6a6036"
 version = "0.1.0"
 
@@ -1284,9 +1284,9 @@ version = "2.8.1"
 
 [[deps.PhysOcean]]
 deps = ["AbstractTrees", "CodecZlib", "Dates", "DelimitedFiles", "Glob", "Gumbo", "HTTP", "Missings", "NCDatasets", "Printf", "Statistics", "Tar"]
-git-tree-sha1 = "81d66002375ac827406e1edc64649d741403526a"
+git-tree-sha1 = "6861c4e3d443933aecdb0533f212829ab4afeab3"
 repo-rev = "master"
-repo-url = "https://github.com/gher-uliege/PhysOcean.jl.git"
+repo-url = "https://github.com/gher-uliege/PhysOcean.jl"
 uuid = "3725be50-bbbd-5592-92c3-2f0e82159c3e"
 version = "0.6.11"
 

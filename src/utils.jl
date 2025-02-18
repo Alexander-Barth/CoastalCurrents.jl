@@ -15,7 +15,7 @@ function listfiles(topdir = "."; extension = "")
     return list
 end
 
-function save(result_filename,(lon,lat,time),(uri,vri))
+function save(result_filename,(lon,lat,time),(uri,vri)) #result : nom inventé
     isfile(result_filename) && rm(result_filename)
 
     NCDataset(result_filename,"c") do ds

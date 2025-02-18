@@ -88,7 +88,8 @@ function save(altimetry_fname,lon,lat,time,sla,slaf,mdt,id)
         end
     end
     len = len[1:j]
-
+    
+    println(pwd())
     @assert length(unique(id)) == length(len)
     @assert length(id) == sum(len)
 
@@ -164,7 +165,7 @@ function download(url,basedir,username,password; download_level = 5, force = fal
 
     if !isdir(joinpath(basedir,product_id)) && !force
         cd(basedir) do
-            run(`wget --no-parent --recursive --level=$(download_level) -nH --cut-dirs=1  --user=$(username) --password=$(password) $(url)`)
+            run(`wget --no-parent --recursive --level=$(download_level) -nH --cut-dirs=1  --user=$(username) --password=$(password) $(url)`) #run cmd, avec les backticks
         end
     end
 
@@ -184,7 +185,7 @@ function perp_velocity!(lon,lat,adt,u,v)
 
         ds = π*Re/180 * GeoMapping.distance(lat[i+1],lon[i+1],lat[i],lon[i])
 
-        ut = g/f * (adt[i+1]-adt[i]) / ds
+        ut = g/f * (adt[i+1]-adt[i]) / ds 
 
         az = GeoMapping.azimuth(latc,lonc,lat[i+1],lon[i+1])
         u[i] = -ut * cosd(-az)
@@ -244,5 +245,7 @@ function geostrophic_velocity(lon,lat,time,adt)
 
     return (lona,lata,timea,ua,va)
 end
+
+
 
 end # module
