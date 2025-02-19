@@ -93,19 +93,19 @@ function load_netrc(fname = expanduser("~/.netrc"))
     return cred
 end
 
-if haskey(ENV,"CMEMS_USERNAME") && haskey(ENV,"CMEMS_PASSWORD")
-    username = ENV["CMEMS_USERNAME"]
-    password = ENV["CMEMS_PASSWORD"]
-else
-    cred = load_netrc()
+#if haskey(ENV,"CMEMS_USERNAME") && haskey(ENV,"CMEMS_PASSWORD")
+#    username = ENV["CMEMS_USERNAME"]
+#    password = ENV["CMEMS_PASSWORD"]
+#else
+#    cred = load_netrc()
 
     # get CMEMS credentials
 
     # https://help.marine.copernicus.eu/en/articles/6135460-how-to-configure-a-simple-opendap-access-directly-in-python
     # https://web.archive.org/web/20230906115443/https://help.marine.copernicus.eu/en/articles/6135460-how-to-configure-a-simple-opendap-access-directly-in-python
 
-    username = cred["my.cmems-du.eu"]["login"]
-    password = cred["my.cmems-du.eu"]["password"]
-end
+#    username = cred["my.cmems-du.eu"]["login"]
+#    password = cred["my.cmems-du.eu"]["password"]
+#end
 
 nothing
